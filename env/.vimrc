@@ -18,15 +18,19 @@ set autoindent
 
 set ruler
 
-syntax on
+syntax enable
 set backspace=indent,eol,start
 set encoding=utf-8
 set fileencodings=utf-8,euc-kr
 scriptencoding=utf-8
 
+set fileformat=unix
+
 set ignorecase
 set incsearch
 set history=1024
+
+autocmd FileType * setlocal comments-=://
 
 " Smart way to move between windows
 map <C-j> <C-W>j
@@ -47,8 +51,10 @@ Plugin 'gmarik/Vundle.vim'
 
 Plugin 'scrooloose/nerdtree'
 Plugin 'The-NERD-Commenter'
+Plugin 'DoxygenToolkit.vim'
 
 Plugin 'jjangun/gtags.vim'
+Plugin 'mileszs/ack.vim'
 
 Plugin 'kien/ctrlp.vim'
 Plugin 'majutsushi/tagbar'
@@ -65,6 +71,11 @@ Plugin 'easymotion/vim-easymotion'
 Plugin 'Mark--karkat'
 
 Plugin 'godlygeek/tabular'
+
+Plugin 'tpope/vim-fugitive'
+
+Plugin 'altercation/vim-colors-solarized'
+Plugin 'flazz/vim-colorschemes'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -85,13 +96,21 @@ filetype plugin indent on    " required
 " YouCompleteMe {{{
 let g:ycm_confirm_extra_conf = 0
 let g:ycm_autoclose_preview_window_after_completion = 1
-let g:ycm_show_diagnostics_ui = 0
+let g:ycm_show_diagnostics_ui = 1
+
+let g:ycm_min_num_of_chars_for_completion = 1
+let g:ycm_collect_identifiers_from_tags_files = 1
+
+"let g:ycm_global_ycm_extra_conf = '~/tools/env/.ycm_extra_conf.py'
+
+nnoremap <silent> <F3> : YcmForceCompileAndDiagnostics<CR>
 
 nnoremap <leader>g :YcmCompleter GoTo<CR>
 nnoremap <leader>gg :YcmCompleter GoToImprecise<CR>
 nnoremap <leader>d :YcmCompleter GoToDeclaration<CR>
 nnoremap <leader>t :YcmCompleter GetType<CR>
 nnoremap <leader>p :YcmCompleter GetParent<CR>
+nnoremap <leader>f :YcmCompleter FixIt<CR>
 " }}}
 
 " Quickfix {{{
@@ -122,12 +141,12 @@ function! ToggleList(bufname, pfx)
   endif
 endfunction
 
-nnoremap <silent> <F6> :call ToggleList("Location List", 'l')<CR>
-nnoremap <silent> <F7> :call ToggleList("Quickfix List", 'c')<CR>
+nnoremap <silent> <F4> :call ToggleList("Location List", 'l')<CR>
+nnoremap <silent> <F6> :call ToggleList("Quickfix List", 'c')<CR>
 " }}}
 
 " NERDTree settings {{{
-nnoremap <silent> <F8> :NERDTreeToggle<CR>
+nnoremap <silent> <F5> :NERDTreeToggle<CR>
 
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
 " }}}
@@ -139,8 +158,16 @@ let Gtags_Auto_Update=1
 let Gtags_No_Auto_Jump=1
 " }}}
 
+" ack settings {{{
+if executable('ag')
+  let g:ackprg = 'ag --vimgrep'
+endif
+
+cnoreabbrev ag Ack!
+" }}}
+
 " Tagbar settings {{{
-nnoremap <silent> <F9> :TagbarToggle<CR>
+nnoremap <silent> <F7> :TagbarToggle<CR>
 " }}}
 
 " ctrlp settings {{{
@@ -185,28 +212,40 @@ map  n <Plug>(easymotion-next)
 map  N <Plug>(easymotion-prev)
 " }}}
 
-" Solarized  Color scheme {{{
-"set background=dark
-"let g:solarized_termcolors=256
-"let g:solarized_termtrans=0
+" Color scheme {{{
+set background=dark
+let g:solarized_termcolors=256
+let g:solarized_termtrans=0
 
-"colorscheme solarized
+colorscheme forneus
+let g:airline_theme='papercolor'
+
+" Column line 80 highlight {{{
+set colorcolumn=+1
+hi ColorColumn ctermbg=235
+set colorcolumn=80
 " }}}
 
-" Molokai Color scheme {{{
-colorscheme molokai
-let g:molokai_original = 0
 " }}}
 
 " Whitespace & EndingSpace Highlight {{{
 highlight ExtraWhitespace ctermbg=darkred guibg=#382424
 match ExtraWhitespace /\s\+$/
-" set list listchars=tab:»·,trail:·,extends:$,nbsp:=
 set list listchars=tab:»-,trail:-,extends:$,nbsp:=
+
+" auto remove trailling space when save
+fun! <SID>StripTrailingWhitespaces()
+    let l = line(".")
+    let c = col(".")
+    retab
+    %s/\s\+$//ge
+    call cursor(l, c)
+endfun
+
+autocmd FileType c,cpp,java,php,ruby,python autocmd BufWritePre <buffer> :call <SID>StripTrailingWhitespaces()
 " }}}
 
-" Column line 80 highlight {{{
-set colorcolumn=+1
-hi ColorColumn ctermbg=234
-set colorcolumn=80
+" DoxygenToolkit {{{
+let g:DoxygenToolkit_authorName="Kyungjae Lee <kyungjae.lee@lge.com>"
+nnoremap <silent> <F8> :Dox<CR>
 " }}}
