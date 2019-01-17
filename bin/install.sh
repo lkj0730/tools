@@ -36,13 +36,13 @@ then
     git clone https://github.com/jjangun/GLOBAL_Win32.git $HOME/tools/bin/global
 else
     echo "Install gnu global"
-    global_version="global-6.5.3"
+    global_version="global-6.6.3"
     global_archive=$global_version".tar.gz"
     global_down_url="http://ftp.gnu.org/gnu/global/"$global_archive
 
     mkdir -p $HOME/tools/bin/global
     wget $global_down_url -P $HOME
-    tar xvzf $global_archive -C $HOME
+    tar xvzf $HOME/$global_archive -C $HOME
 
     cd $HOME/$global_version
     ./configure --prefix=$HOME/tools/bin/global

@@ -219,13 +219,12 @@ let g:solarized_termtrans=0
 
 colorscheme forneus
 let g:airline_theme='papercolor'
+" }}}
 
 " Column line 80 highlight {{{
 set colorcolumn=+1
 hi ColorColumn ctermbg=235
 set colorcolumn=80
-" }}}
-
 " }}}
 
 " Whitespace & EndingSpace Highlight {{{
