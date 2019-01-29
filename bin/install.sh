@@ -28,13 +28,8 @@ then
     ~/.vim/bundle/YouCompleteMe/install.py --clang-completer
 fi
 
-if [ "$MType" = *"CYGWIN"* ]
+if [ "$MType" != *"CYGWIN"* ]
 then
-    echo "Cygwin System"
-    echo "Downloading... Global Win32 Version"
-    mkdir -p $HOME/tools/bin/global
-    git clone https://github.com/jjangun/GLOBAL_Win32.git $HOME/tools/bin/global
-else
     echo "Install gnu global"
     global_version="global-6.6.3"
     global_archive=$global_version".tar.gz"
@@ -55,6 +50,23 @@ else
     rm -rf $HOME/$global_archive
     rm -rf $HOME/$global_version
     echo "global install done"
+else
+    echo "Cygwin System"
+    echo "Downloading... Global Win32 Version"
+    mkdir -p $HOME/tools/bin/global
+    git clone https://github.com/jjangun/GLOBAL_Win32.git $HOME/tools/bin/global
+fi
+
+if [ "$MType" != *"CYGWIN"* ]
+then
+    echo "Install beyond grep - ack2"
+    git clone https://github.com/beyondgrep/ack2.git $HOME/tools/ack2
+
+    cd $HOME/tools/ack2
+    perl Makefile.PL
+    make ack-standalone
+    cp -av $HOME/tools/ack2/ack-standalone $HOME/tools/bin/ack
+    rm -rf $HOME/tools/ack2
 fi
 
 echo "Completed!"
